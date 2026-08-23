@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Hola, Mundo!</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-gradient: linear-gradient(135deg, #38bdf8, #818cf8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-gradient);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: var(--text-main);
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 3rem 2.5rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 480px;
+      width: 100%;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      margin-bottom: 1.25rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.75rem;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--accent-gradient);
+      color: #0f172a;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+      transition: opacity 0.2s ease, transform 0.1s ease;
+      user-select: none;
+    }
+
+    .btn:hover {
+      opacity: 0.92;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .counter {
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <span class="badge">Mi Primera Página</span>
+    <h1>¡Hola, Mundo!</h1>
+    <p>Esta es una página web sencilla, moderna y responsiva creada con HTML y CSS.</p>
+    <button class="btn" id="clickBtn" type="button">
+      ✨ Saludar
+    </button>
+    <div class="counter" id="counterText"></div>
+  </main>
+
+  <script>
+    let clicks = 0;
+    const btn = document.getElementById('clickBtn');
+    const counterText = document.getElementById('counterText');
+
+    btn.addEventListener('click', () => {
+      clicks++;
+      if (clicks === 1) {
+        counterText.textContent = '¡Hola! Has hecho clic 1 vez.';
+      } else {
+        counterText.textContent = `¡Genial! Has hecho clic ${clicks} veces.`;
+      }
+    });
+  </script>
+</body>
+</html>
