@@ -1,0 +1,12 @@
+{
+  "name": "cartucho",
+  "version": "1.0.0",
+  "description": "Servidor web con endpoint para ping",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
