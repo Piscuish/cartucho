@@ -16,7 +16,7 @@
       --danger: #f87171;
       --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
       --success: #34d399;
-      --modal-bg: rgba(15, 23, 42, 0.9);
+      --modal-bg: rgba(15, 23, 42, 0.92);
     }
 
     * {
@@ -92,6 +92,7 @@
       flex-wrap: wrap;
       gap: 0.85rem;
       justify-content: center;
+      align-items: center;
     }
 
     .btn {
@@ -139,8 +140,8 @@
     }
 
     .btn-small {
-      padding: 0.4rem 0.75rem;
-      font-size: 0.8rem;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.82rem;
       border-radius: 0.5rem;
     }
 
@@ -154,9 +155,9 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -172,11 +173,17 @@
       visibility: visible;
     }
 
+    /* Para modales anidados/secundarios como el editor */
+    .modal-overlay.submodal {
+      z-index: 1100;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
     .modal-card {
       background: var(--modal-bg);
       border: 1px solid var(--card-border);
       border-radius: 1.25rem;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
       width: 100%;
       max-width: 420px;
       padding: 2rem;
@@ -189,8 +196,8 @@
     }
 
     .modal-card.wide {
-      max-width: 680px;
-      max-height: 90vh;
+      max-width: 720px;
+      max-height: 88vh;
       display: flex;
       flex-direction: column;
       padding: 1.75rem;
@@ -203,6 +210,7 @@
       margin-bottom: 1.25rem;
       border-bottom: 1px solid var(--card-border);
       padding-bottom: 0.85rem;
+      gap: 0.75rem;
     }
 
     .modal-header h2 {
@@ -212,6 +220,13 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
     }
 
     .close-btn {
@@ -233,7 +248,7 @@
 
     /* Formulario */
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 1.1rem;
       text-align: left;
     }
 
@@ -269,7 +284,7 @@
 
     textarea.form-control {
       resize: vertical;
-      min-height: 80px;
+      min-height: 120px;
     }
 
     .error-text {
@@ -290,41 +305,40 @@
       40%, 80% { transform: translateX(6px); }
     }
 
-    /* Panel de Notas */
-    .notes-editor-box {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: 0.85rem;
-      padding: 1.1rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .notes-editor-box h3 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .notes-list-header {
+    /* Barra informativa de notas */
+    .notes-toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.85rem;
-      font-size: 0.9rem;
-      color: var(--text-muted);
+      margin-bottom: 1rem;
+      padding: 0 0.2rem;
     }
 
+    .notes-info {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tag-count {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    /* Área de scroll de notas */
     .notes-scroll-area {
       overflow-y: auto;
-      max-height: 320px;
-      padding-right: 0.35rem;
+      max-height: 480px;
+      padding-right: 0.4rem;
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 0.75rem;
     }
 
     .notes-scroll-area::-webkit-scrollbar {
@@ -339,70 +353,149 @@
       border-radius: 4px;
     }
 
-    .note-item {
+    /* Tarjeta de Nota con Menú Desplegable (Acordeón) */
+    .note-card {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--card-border);
-      border-radius: 0.75rem;
-      padding: 1rem;
-      transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+      border-radius: 0.85rem;
+      overflow: hidden;
+      transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
       text-align: left;
     }
 
-    .note-item:hover {
-      background: rgba(255, 255, 255, 0.07);
-      border-color: rgba(56, 189, 248, 0.4);
+    .note-card:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      background: rgba(255, 255, 255, 0.06);
     }
 
-    .note-top {
+    .note-card.expanded {
+      border-color: rgba(56, 189, 248, 0.55);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Cabecera desplegable de la nota */
+    .note-accordion-header {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 0.4rem;
-      gap: 0.5rem;
+      padding: 0.9rem 1.1rem;
+      cursor: pointer;
+      user-select: none;
+      gap: 0.75rem;
+    }
+
+    .note-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .note-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
     }
 
     .note-title {
       font-size: 1rem;
       font-weight: 700;
       color: var(--text-main);
-      word-break: break-word;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .note-header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-shrink: 0;
     }
 
     .note-date {
       font-size: 0.75rem;
       color: var(--text-muted);
-      white-space: nowrap;
     }
 
-    .note-content {
-      font-size: 0.9rem;
+    .toggle-indicator {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: bold;
+      transition: transform 0.25s ease, background 0.2s ease;
+    }
+
+    .note-card.expanded .toggle-indicator {
+      transform: rotate(180deg);
+      background: rgba(56, 189, 248, 0.2);
+    }
+
+    /* Contenido desplegable */
+    .note-accordion-body {
+      display: none;
+      padding: 0 1.1rem 1.1rem 1.1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 0.2rem;
+      padding-top: 0.85rem;
+      animation: expandAnim 0.22s ease-out;
+    }
+
+    .note-card.expanded .note-accordion-body {
+      display: block;
+    }
+
+    @keyframes expandAnim {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .note-content-box {
+      font-size: 0.92rem;
       color: #cbd5e1;
-      line-height: 1.5;
+      line-height: 1.6;
       white-space: pre-wrap;
       word-break: break-word;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.9rem;
+      background: rgba(0, 0, 0, 0.22);
+      padding: 0.85rem 1rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .note-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .empty-state {
       text-align: center;
-      padding: 2.5rem 1rem;
+      padding: 3rem 1.5rem;
       color: var(--text-muted);
       font-size: 0.95rem;
       background: rgba(255, 255, 255, 0.02);
       border: 1px dashed var(--card-border);
-      border-radius: 0.75rem;
+      border-radius: 0.85rem;
     }
 
     .empty-state span {
       display: block;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
+      font-size: 2.4rem;
+      margin-bottom: 0.6rem;
     }
   </style>
 </head>
@@ -433,7 +526,7 @@
         <h2 id="pwdTitle">🔐 Acceso Protegido</h2>
         <button class="close-btn" id="closePwdBtn" type="button" aria-label="Cerrar">&times;</button>
       </div>
-      <p style="text-align: left; margin-bottom: 1rem; font-size: 0.9rem;">
+      <p style="text-align: left; margin-bottom: 1.25rem; font-size: 0.9rem; color: var(--text-muted);">
         Introduce la contraseña para ingresar al menú de notas:
       </p>
       <form id="passwordForm">
@@ -449,7 +542,7 @@
           />
           <div class="error-text" id="passwordError">⚠️ Contraseña incorrecta. Inténtalo de nuevo.</div>
         </div>
-        <div class="button-group" style="justify-content: flex-end; margin-top: 1.25rem;">
+        <div class="button-group" style="justify-content: flex-end; margin-top: 1.4rem;">
           <button type="button" class="btn btn-secondary" id="cancelPwdBtn">Cancelar</button>
           <button type="submit" class="btn">🔓 Desbloquear</button>
         </div>
@@ -457,61 +550,75 @@
     </div>
   </div>
 
-  <!-- Modal 2: Menú y Gestor de Notas (CRUD) -->
+  <!-- Modal 2: Menú Principal de Notas (Lista Expandible) -->
   <div class="modal-overlay" id="notesModal" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
     <div class="modal-card wide">
       <div class="modal-header">
-        <h2 id="notesTitle">📝 Menú de Notas</h2>
-        <button class="btn btn-secondary btn-small" id="lockNotesBtn" type="button">
-          🔒 Bloquear y Salir
-        </button>
+        <h2 id="notesTitle">📝 Mis Notas</h2>
+        <div class="header-actions">
+          <button class="btn btn-small" id="openCreateNoteBtn" type="button">
+            ➕ Nueva Nota
+          </button>
+          <button class="btn btn-secondary btn-small" id="lockNotesBtn" type="button">
+            🔒 Salir
+          </button>
+        </div>
       </div>
 
-      <!-- Formulario para Crear / Editar Nota -->
-      <section class="notes-editor-box">
-        <h3 id="formTitle">➕ Nueva Nota</h3>
-        <form id="noteForm">
-          <input type="hidden" id="editingNoteId" value="" />
-          <div class="form-group">
-            <label for="noteTitleInput">Título</label>
-            <input 
-              type="text" 
-              id="noteTitleInput" 
-              class="form-control" 
-              placeholder="Ej: Recordatorio importante" 
-              required 
-            />
-          </div>
-          <div class="form-group">
-            <label for="noteContentInput">Contenido</label>
-            <textarea 
-              id="noteContentInput" 
-              class="form-control" 
-              rows="3" 
-              placeholder="Escribe el detalle de tu nota aquí..." 
-              required
-            ></textarea>
-          </div>
-          <div class="button-group" style="justify-content: flex-end;">
-            <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display: none;">
-              Cancelar Edición
-            </button>
-            <button type="submit" class="btn" id="saveNoteBtn">
-              💾 Guardar Nota
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <!-- Lista de Notas -->
-      <div class="notes-list-header">
-        <strong>Notas Guardadas</strong>
-        <span id="notesCountBadge">0 notas</span>
+      <!-- Barra de información -->
+      <div class="notes-toolbar">
+        <div class="notes-info">
+          <span>Tus notas guardadas:</span>
+          <span class="tag-count" id="notesCountBadge">0 notas</span>
+        </div>
+        <span style="font-size: 0.78rem; color: var(--text-muted);">Haz clic en una nota para verla</span>
       </div>
 
+      <!-- Lista con Acordeones Desplegables -->
       <div class="notes-scroll-area" id="notesListContainer">
         <!-- Las notas se renderizan dinámicamente aquí -->
       </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Crear / Editar Nota (Modal independiente para no saturar la vista) -->
+  <div class="modal-overlay submodal" id="noteEditorModal" role="dialog" aria-modal="true" aria-labelledby="editorModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="editorModalTitle">➕ Nueva Nota</h2>
+        <button class="close-btn" id="closeEditorBtn" type="button" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <form id="noteForm">
+        <input type="hidden" id="editingNoteId" value="" />
+        <div class="form-group">
+          <label for="noteTitleInput">Título de la nota</label>
+          <input 
+            type="text" 
+            id="noteTitleInput" 
+            class="form-control" 
+            placeholder="Ej: Lista de compras, ideas..." 
+            required 
+          />
+        </div>
+        <div class="form-group">
+          <label for="noteContentInput">Contenido</label>
+          <textarea 
+            id="noteContentInput" 
+            class="form-control" 
+            placeholder="Escribe los detalles de tu nota aquí..." 
+            required
+          ></textarea>
+        </div>
+        <div class="button-group" style="justify-content: flex-end; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary" id="cancelEditorBtn">
+            Cancelar
+          </button>
+          <button type="submit" class="btn" id="saveNoteBtn">
+            💾 Guardar Nota
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -533,8 +640,9 @@
     // --- Constantes y Estado ---
     const SECRET_KEY = '4512';
     const STORAGE_KEY = 'mis_notas_app_data';
+    let expandedNoteIds = new Set(); // Guarda IDs de notas actualmente desplegadas
 
-    // Elementos DOM - Modales
+    // Elementos DOM - Password Modal
     const openNotesBtn = document.getElementById('openNotesBtn');
     const passwordModal = document.getElementById('passwordModal');
     const pwdModalCard = document.getElementById('pwdModalCard');
@@ -544,19 +652,23 @@
     const passwordInput = document.getElementById('passwordInput');
     const passwordError = document.getElementById('passwordError');
 
+    // Elementos DOM - Notes Modal
     const notesModal = document.getElementById('notesModal');
     const lockNotesBtn = document.getElementById('lockNotesBtn');
+    const notesListContainer = document.getElementById('notesListContainer');
+    const notesCountBadge = document.getElementById('notesCountBadge');
 
-    // Elementos DOM - Notas
+    // Elementos DOM - Editor Modal (Crear/Editar)
+    const openCreateNoteBtn = document.getElementById('openCreateNoteBtn');
+    const noteEditorModal = document.getElementById('noteEditorModal');
+    const editorModalTitle = document.getElementById('editorModalTitle');
+    const closeEditorBtn = document.getElementById('closeEditorBtn');
+    const cancelEditorBtn = document.getElementById('cancelEditorBtn');
     const noteForm = document.getElementById('noteForm');
-    const formTitle = document.getElementById('formTitle');
     const editingNoteId = document.getElementById('editingNoteId');
     const noteTitleInput = document.getElementById('noteTitleInput');
     const noteContentInput = document.getElementById('noteContentInput');
     const saveNoteBtn = document.getElementById('saveNoteBtn');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const notesListContainer = document.getElementById('notesListContainer');
-    const notesCountBadge = document.getElementById('notesCountBadge');
 
     // --- Persistencia con LocalStorage ---
     function getStoredNotes() {
@@ -577,7 +689,7 @@
       }
     }
 
-    // --- Control de Modales ---
+    // --- Control del Modal de Contraseña ---
     function openPasswordModal() {
       passwordInput.value = '';
       passwordError.style.display = 'none';
@@ -589,23 +701,58 @@
       passwordModal.classList.remove('active');
     }
 
+    // --- Control del Modal Principal de Notas ---
     function openNotesModal() {
-      resetNoteForm();
       renderNotes();
       notesModal.classList.add('active');
     }
 
     function closeNotesModal() {
       notesModal.classList.remove('active');
-      resetNoteForm();
+      closeEditorModal();
     }
 
+    // --- Control del Modal de Crear / Editar Nota ---
+    function openCreateNoteModal() {
+      editingNoteId.value = '';
+      noteTitleInput.value = '';
+      noteContentInput.value = '';
+      editorModalTitle.textContent = '➕ Nueva Nota';
+      saveNoteBtn.innerHTML = '💾 Guardar Nota';
+      noteEditorModal.classList.add('active');
+      setTimeout(() => noteTitleInput.focus(), 150);
+    }
+
+    function openEditNoteModal(id) {
+      const notes = getStoredNotes();
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+
+      editingNoteId.value = note.id;
+      noteTitleInput.value = note.title;
+      noteContentInput.value = note.content;
+
+      editorModalTitle.textContent = '✏️ Editar Nota';
+      saveNoteBtn.innerHTML = '💾 Actualizar Nota';
+      noteEditorModal.classList.add('active');
+      setTimeout(() => noteTitleInput.focus(), 150);
+    }
+
+    function closeEditorModal() {
+      noteEditorModal.classList.remove('active');
+    }
+
+    // Event Listeners de Apertura y Cierre
     openNotesBtn.addEventListener('click', openPasswordModal);
     closePwdBtn.addEventListener('click', closePasswordModal);
     cancelPwdBtn.addEventListener('click', closePasswordModal);
     lockNotesBtn.addEventListener('click', closeNotesModal);
 
-    // Cerrar modales con clic afuera
+    openCreateNoteBtn.addEventListener('click', openCreateNoteModal);
+    closeEditorBtn.addEventListener('click', closeEditorModal);
+    cancelEditorBtn.addEventListener('click', closeEditorModal);
+
+    // Cierre al hacer clic fuera del modal
     passwordModal.addEventListener('click', (e) => {
       if (e.target === passwordModal) closePasswordModal();
     });
@@ -614,11 +761,20 @@
       if (e.target === notesModal) closeNotesModal();
     });
 
-    // Cerrar modales con tecla ESC
+    noteEditorModal.addEventListener('click', (e) => {
+      if (e.target === noteEditorModal) closeEditorModal();
+    });
+
+    // Cierre con tecla Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (passwordModal.classList.contains('active')) closePasswordModal();
-        if (notesModal.classList.contains('active')) closeNotesModal();
+        if (noteEditorModal.classList.contains('active')) {
+          closeEditorModal();
+        } else if (notesModal.classList.contains('active')) {
+          closeNotesModal();
+        } else if (passwordModal.classList.contains('active')) {
+          closePasswordModal();
+        }
       }
     });
 
@@ -633,14 +789,14 @@
       } else {
         passwordError.style.display = 'block';
         pwdModalCard.classList.remove('shake');
-        void pwdModalCard.offsetWidth; // Forzar reflujo para reiniciar animación
+        void pwdModalCard.offsetWidth; // Forzar reflujo de animación
         pwdModalCard.classList.add('shake');
         passwordInput.focus();
         passwordInput.select();
       }
     });
 
-    // --- CRUD de Notas ---
+    // --- CRUD y Renderizado Desplegable de Notas ---
     function formatDate(isoString) {
       const date = new Date(isoString);
       return date.toLocaleString('es-ES', {
@@ -652,6 +808,15 @@
       });
     }
 
+    function toggleNote(id) {
+      if (expandedNoteIds.has(id)) {
+        expandedNoteIds.delete(id);
+      } else {
+        expandedNoteIds.add(id);
+      }
+      renderNotes();
+    }
+
     function renderNotes() {
       const notes = getStoredNotes();
       notesCountBadge.textContent = notes.length === 1 ? '1 nota' : `${notes.length} notas`;
@@ -660,32 +825,45 @@
         notesListContainer.innerHTML = `
           <div class="empty-state">
             <span>📭</span>
-            No tienes notas guardadas aún.<br>Escribe una arriba y presiona "Guardar Nota".
+            <strong>No tienes notas guardadas aún.</strong><br>
+            Presiona el botón <strong>"➕ Nueva Nota"</strong> arriba para crear tu primera nota.
           </div>
         `;
         return;
       }
 
-      // Ordenar: las más recientes primero
+      // Ordenar por fecha más reciente
       const sorted = [...notes].sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
 
-      notesListContainer.innerHTML = sorted.map(note => `
-        <div class="note-item" data-id="${note.id}">
-          <div class="note-top">
-            <div class="note-title">${escapeHtml(note.title)}</div>
-            <div class="note-date">${formatDate(note.updatedAt || note.createdAt)}</div>
+      notesListContainer.innerHTML = sorted.map(note => {
+        const isExpanded = expandedNoteIds.has(note.id);
+        return `
+          <div class="note-card ${isExpanded ? 'expanded' : ''}" id="note-card-${note.id}">
+            <div class="note-accordion-header" onclick="toggleNote('${note.id}')" title="Clic para desplegar contenido">
+              <div class="note-header-left">
+                <span class="note-icon">📌</span>
+                <div class="note-title">${escapeHtml(note.title)}</div>
+              </div>
+              <div class="note-header-right">
+                <span class="note-date">${formatDate(note.updatedAt || note.createdAt)}</span>
+                <span class="toggle-indicator">▼</span>
+              </div>
+            </div>
+            
+            <div class="note-accordion-body">
+              <div class="note-content-box">${escapeHtml(note.content)}</div>
+              <div class="note-actions">
+                <button class="btn btn-secondary btn-small" onclick="openEditNoteModal('${note.id}')" type="button">
+                  ✏️ Editar
+                </button>
+                <button class="btn btn-danger btn-small" onclick="deleteNote('${note.id}')" type="button">
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="note-content">${escapeHtml(note.content)}</div>
-          <div class="note-actions">
-            <button class="btn btn-secondary btn-small edit-btn" onclick="startEditNote('${note.id}')" type="button">
-              ✏️ Editar
-            </button>
-            <button class="btn btn-danger btn-small delete-btn" onclick="deleteNote('${note.id}')" type="button">
-              🗑️ Eliminar
-            </button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function escapeHtml(text) {
@@ -694,15 +872,7 @@
       return div.innerHTML;
     }
 
-    function resetNoteForm() {
-      editingNoteId.value = '';
-      noteTitleInput.value = '';
-      noteContentInput.value = '';
-      formTitle.textContent = '➕ Nueva Nota';
-      saveNoteBtn.innerHTML = '💾 Guardar Nota';
-      cancelEditBtn.style.display = 'none';
-    }
-
+    // Guardar o Actualizar Nota desde el formulario modal
     noteForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const title = noteTitleInput.value.trim();
@@ -720,58 +890,40 @@
           notes[noteIndex].title = title;
           notes[noteIndex].content = content;
           notes[noteIndex].updatedAt = new Date().toISOString();
+          expandedNoteIds.add(id); // Dejarla desplegada al actualizar
         }
       } else {
         // Modo Creación
+        const newId = Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
         const newNote = {
-          id: Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+          id: newId,
           title: title,
           content: content,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
         notes.unshift(newNote);
+        expandedNoteIds.add(newId); // Desplegar automáticamente la nueva nota
       }
 
       saveStoredNotes(notes);
-      resetNoteForm();
+      closeEditorModal();
       renderNotes();
     });
-
-    window.startEditNote = function(id) {
-      const notes = getStoredNotes();
-      const note = notes.find(n => n.id === id);
-      if (!note) return;
-
-      editingNoteId.value = note.id;
-      noteTitleInput.value = note.title;
-      noteContentInput.value = note.content;
-
-      formTitle.textContent = '✏️ Editando Nota';
-      saveNoteBtn.innerHTML = '💾 Actualizar Nota';
-      cancelEditBtn.style.display = 'inline-flex';
-
-      noteTitleInput.focus();
-    };
 
     window.deleteNote = function(id) {
       if (!confirm('¿Estás seguro de que deseas eliminar esta nota?')) return;
 
       let notes = getStoredNotes();
       notes = notes.filter(n => n.id !== id);
+      expandedNoteIds.delete(id);
       saveStoredNotes(notes);
-
-      // Si estábamos editando la misma nota eliminada, limpiamos el formulario
-      if (editingNoteId.value === id) {
-        resetNoteForm();
-      }
 
       renderNotes();
     };
 
-    cancelEditBtn.addEventListener('click', () => {
-      resetNoteForm();
-    });
+    window.toggleNote = toggleNote;
+    window.openEditNoteModal = openEditNoteModal;
   </script>
 </body>
 </html>
