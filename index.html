@@ -670,23 +670,33 @@
     const noteContentInput = document.getElementById('noteContentInput');
     const saveNoteBtn = document.getElementById('saveNoteBtn');
 
-    // --- Persistencia con LocalStorage ---
-    function getStoredNotes() {
+    // --- Persistencia y Sincronización con el Servidor ---
+    let cachedNotes = [];
+    let autoRefreshInterval = null;
+
+    async function fetchNotesFromServer() {
+      try {
+        const res = await fetch('/api/notes');
+        if (res.ok) {
+          const notes = await res.json();
+          cachedNotes = notes;
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+          } catch (e) {}
+          return notes;
+        }
+      } catch (err) {
+        console.warn('Servidor offline o inaccesible, usando caché local:', err);
+      }
+
+      // Si el servidor falla, usar copia local de respaldo
       try {
         const data = localStorage.getItem(STORAGE_KEY);
-        return data ? JSON.parse(data) : [];
+        cachedNotes = data ? JSON.parse(data) : [];
       } catch (e) {
-        console.error('Error al leer de localStorage', e);
-        return [];
+        cachedNotes = [];
       }
-    }
-
-    function saveStoredNotes(notes) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-      } catch (e) {
-        console.error('Error al guardar en localStorage', e);
-      }
+      return cachedNotes;
     }
 
     // --- Control del Modal de Contraseña ---
@@ -702,14 +712,25 @@
     }
 
     // --- Control del Modal Principal de Notas ---
-    function openNotesModal() {
-      renderNotes();
+    async function openNotesModal() {
       notesModal.classList.add('active');
+      await refreshNotesView();
+      // Auto-actualizar cada 3 segundos mientras el modal esté abierto para ver cambios de otras PCs al instante
+      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+      autoRefreshInterval = setInterval(() => {
+        if (notesModal.classList.contains('active') && !noteEditorModal.classList.contains('active')) {
+          refreshNotesView(false); // Refrescar en segundo plano sin interrumpir
+        }
+      }, 3000);
     }
 
     function closeNotesModal() {
       notesModal.classList.remove('active');
       closeEditorModal();
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+      }
     }
 
     // --- Control del Modal de Crear / Editar Nota ---
@@ -724,8 +745,7 @@
     }
 
     function openEditNoteModal(id) {
-      const notes = getStoredNotes();
-      const note = notes.find(n => n.id === id);
+      const note = cachedNotes.find(n => n.id === id);
       if (!note) return;
 
       editingNoteId.value = note.id;
@@ -778,7 +798,7 @@
       }
     });
 
-    // --- Validación de Contraseña (4512) ---
+    // --- Validación de Contraseña (123) ---
     passwordForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const enteredValue = passwordInput.value.trim();
@@ -817,8 +837,21 @@
       renderNotes();
     }
 
+    async function refreshNotesView(showLoading = true) {
+      if (showLoading && cachedNotes.length === 0) {
+        notesListContainer.innerHTML = `
+          <div class="empty-state">
+            <span>⏳</span>
+            <strong>Cargando notas sincronizadas...</strong>
+          </div>
+        `;
+      }
+      await fetchNotesFromServer();
+      renderNotes();
+    }
+
     function renderNotes() {
-      const notes = getStoredNotes();
+      const notes = cachedNotes;
       notesCountBadge.textContent = notes.length === 1 ? '1 nota' : `${notes.length} notas`;
 
       if (notes.length === 0) {
@@ -872,8 +905,8 @@
       return div.innerHTML;
     }
 
-    // Guardar o Actualizar Nota desde el formulario modal
-    noteForm.addEventListener('submit', (e) => {
+    // Guardar o Actualizar Nota enviando al servidor
+    noteForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = noteTitleInput.value.trim();
       const content = noteContentInput.value.trim();
@@ -881,45 +914,61 @@
 
       if (!title || !content) return;
 
-      const notes = getStoredNotes();
+      saveNoteBtn.disabled = true;
+      saveNoteBtn.textContent = 'Guardando...';
 
-      if (id) {
-        // Modo Edición
-        const noteIndex = notes.findIndex(n => n.id === id);
-        if (noteIndex !== -1) {
-          notes[noteIndex].title = title;
-          notes[noteIndex].content = content;
-          notes[noteIndex].updatedAt = new Date().toISOString();
-          expandedNoteIds.add(id); // Dejarla desplegada al actualizar
+      try {
+        if (id) {
+          // Modo Edición: PUT al servidor
+          const res = await fetch(`/api/notes/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content })
+          });
+          if (res.ok) {
+            const updated = await res.json();
+            const idx = cachedNotes.findIndex(n => n.id === id);
+            if (idx !== -1) cachedNotes[idx] = updated;
+            expandedNoteIds.add(id);
+          }
+        } else {
+          // Modo Creación: POST al servidor
+          const res = await fetch('/api/notes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content })
+          });
+          if (res.ok) {
+            const newNote = await res.json();
+            cachedNotes.unshift(newNote);
+            expandedNoteIds.add(newNote.id);
+          }
         }
-      } else {
-        // Modo Creación
-        const newId = Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
-        const newNote = {
-          id: newId,
-          title: title,
-          content: content,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-        notes.unshift(newNote);
-        expandedNoteIds.add(newId); // Desplegar automáticamente la nueva nota
+      } catch (err) {
+        console.error('Error al guardar en servidor:', err);
+      } finally {
+        saveNoteBtn.disabled = false;
+        closeEditorModal();
+        await refreshNotesView();
       }
-
-      saveStoredNotes(notes);
-      closeEditorModal();
-      renderNotes();
     });
 
-    window.deleteNote = function(id) {
+    window.deleteNote = async function(id) {
       if (!confirm('¿Estás seguro de que deseas eliminar esta nota?')) return;
 
-      let notes = getStoredNotes();
-      notes = notes.filter(n => n.id !== id);
-      expandedNoteIds.delete(id);
-      saveStoredNotes(notes);
-
+      try {
+        const res = await fetch(`/api/notes/${id}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          cachedNotes = cachedNotes.filter(n => n.id !== id);
+          expandedNoteIds.delete(id);
+        }
+      } catch (err) {
+        console.error('Error al eliminar en servidor:', err);
+      }
       renderNotes();
+      await refreshNotesView(false);
     };
 
     window.toggleNote = toggleNote;
