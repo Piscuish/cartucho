@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>¡Hola, Mundo!</title>
+  <title>¡Hola, Mundo! - Gestor de Notas</title>
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
@@ -13,6 +13,10 @@
       --text-muted: #94a3b8;
       --accent: #38bdf8;
       --accent-gradient: linear-gradient(135deg, #38bdf8, #818cf8);
+      --danger: #f87171;
+      --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
+      --success: #34d399;
+      --modal-bg: rgba(15, 23, 42, 0.9);
     }
 
     * {
@@ -30,25 +34,26 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       color: var(--text-main);
       padding: 1.5rem;
+      position: relative;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       padding: 3rem 2.5rem;
       border-radius: 1.5rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
       text-align: center;
-      max-width: 480px;
+      max-width: 500px;
       width: 100%;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45);
     }
 
     .badge {
@@ -66,7 +71,7 @@
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: 2.8rem;
       font-weight: 800;
       letter-spacing: -0.025em;
       margin-bottom: 0.75rem;
@@ -76,10 +81,17 @@
     }
 
     p {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--text-muted);
       line-height: 1.6;
       margin-bottom: 2rem;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      justify-content: center;
     }
 
     .btn {
@@ -89,23 +101,47 @@
       gap: 0.5rem;
       background: var(--accent-gradient);
       color: #0f172a;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      padding: 0.75rem 1.5rem;
+      padding: 0.75rem 1.4rem;
       border-radius: 0.75rem;
       border: none;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
-      transition: opacity 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+      transition: all 0.2s ease;
       user-select: none;
     }
 
     .btn:hover {
-      opacity: 0.92;
+      opacity: 0.94;
+      transform: translateY(-1px);
     }
 
     .btn:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .btn-danger {
+      background: var(--danger-gradient);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-small {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 0.5rem;
     }
 
     .counter {
@@ -113,31 +149,628 @@
       font-size: 0.9rem;
       color: var(--text-muted);
     }
+
+    /* Estilos de Modales */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: var(--modal-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1.25rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      max-width: 420px;
+      padding: 2rem;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-card.wide {
+      max-width: 680px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.75rem;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.85rem;
+    }
+
+    .modal-header h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.35rem;
+      transition: color 0.2s, background-color 0.2s;
+    }
+
+    .close-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Formulario */
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      border-radius: 0.65rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .form-control::placeholder {
+      color: #64748b;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .error-text {
+      color: var(--danger);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: none;
+      text-align: left;
+    }
+
+    .shake {
+      animation: shakeAnim 0.35s ease;
+    }
+
+    @keyframes shakeAnim {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    /* Panel de Notas */
+    .notes-editor-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 0.85rem;
+      padding: 1.1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .notes-editor-box h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .notes-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .notes-scroll-area {
+      overflow-y: auto;
+      max-height: 320px;
+      padding-right: 0.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .notes-scroll-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .notes-scroll-area::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+    }
+    .notes-scroll-area::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .note-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+      text-align: left;
+    }
+
+    .note-item:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .note-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.4rem;
+      gap: 0.5rem;
+    }
+
+    .note-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .note-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .note-content {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 0.75rem;
+    }
+
+    .note-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--card-border);
+      border-radius: 0.75rem;
+    }
+
+    .empty-state span {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Tarjeta Principal -->
   <main class="card">
     <span class="badge">Mi Primera Página</span>
     <h1>¡Hola, Mundo!</h1>
     <p>Esta es una página web sencilla, moderna y responsiva creada con HTML y CSS.</p>
-    <button class="btn" id="clickBtn" type="button">
-      ✨ Saludar
-    </button>
+    
+    <div class="button-group">
+      <button class="btn" id="clickBtn" type="button">
+        ✨ Saludar
+      </button>
+      <button class="btn btn-secondary" id="openNotesBtn" type="button">
+        🔒 Mis Notas
+      </button>
+    </div>
+
     <div class="counter" id="counterText"></div>
   </main>
 
+  <!-- Modal 1: Autenticación por Contraseña -->
+  <div class="modal-overlay" id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="pwdTitle">
+    <div class="modal-card" id="pwdModalCard">
+      <div class="modal-header">
+        <h2 id="pwdTitle">🔐 Acceso Protegido</h2>
+        <button class="close-btn" id="closePwdBtn" type="button" aria-label="Cerrar">&times;</button>
+      </div>
+      <p style="text-align: left; margin-bottom: 1rem; font-size: 0.9rem;">
+        Introduce la contraseña para ingresar al menú de notas:
+      </p>
+      <form id="passwordForm">
+        <div class="form-group">
+          <label for="passwordInput">Contraseña de acceso</label>
+          <input 
+            type="password" 
+            id="passwordInput" 
+            class="form-control" 
+            placeholder="Introduce contraseña..." 
+            autocomplete="current-password"
+            required 
+          />
+          <div class="error-text" id="passwordError">⚠️ Contraseña incorrecta. Inténtalo de nuevo.</div>
+        </div>
+        <div class="button-group" style="justify-content: flex-end; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary" id="cancelPwdBtn">Cancelar</button>
+          <button type="submit" class="btn">🔓 Desbloquear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Menú y Gestor de Notas (CRUD) -->
+  <div class="modal-overlay" id="notesModal" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
+    <div class="modal-card wide">
+      <div class="modal-header">
+        <h2 id="notesTitle">📝 Menú de Notas</h2>
+        <button class="btn btn-secondary btn-small" id="lockNotesBtn" type="button">
+          🔒 Bloquear y Salir
+        </button>
+      </div>
+
+      <!-- Formulario para Crear / Editar Nota -->
+      <section class="notes-editor-box">
+        <h3 id="formTitle">➕ Nueva Nota</h3>
+        <form id="noteForm">
+          <input type="hidden" id="editingNoteId" value="" />
+          <div class="form-group">
+            <label for="noteTitleInput">Título</label>
+            <input 
+              type="text" 
+              id="noteTitleInput" 
+              class="form-control" 
+              placeholder="Ej: Recordatorio importante" 
+              required 
+            />
+          </div>
+          <div class="form-group">
+            <label for="noteContentInput">Contenido</label>
+            <textarea 
+              id="noteContentInput" 
+              class="form-control" 
+              rows="3" 
+              placeholder="Escribe el detalle de tu nota aquí..." 
+              required
+            ></textarea>
+          </div>
+          <div class="button-group" style="justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display: none;">
+              Cancelar Edición
+            </button>
+            <button type="submit" class="btn" id="saveNoteBtn">
+              💾 Guardar Nota
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Lista de Notas -->
+      <div class="notes-list-header">
+        <strong>Notas Guardadas</strong>
+        <span id="notesCountBadge">0 notas</span>
+      </div>
+
+      <div class="notes-scroll-area" id="notesListContainer">
+        <!-- Las notas se renderizan dinámicamente aquí -->
+      </div>
+    </div>
+  </div>
+
   <script>
+    // --- Lógica del botón Saludar (original) ---
     let clicks = 0;
-    const btn = document.getElementById('clickBtn');
+    const clickBtn = document.getElementById('clickBtn');
     const counterText = document.getElementById('counterText');
 
-    btn.addEventListener('click', () => {
+    clickBtn.addEventListener('click', () => {
       clicks++;
       if (clicks === 1) {
         counterText.textContent = '¡Hola! Has hecho clic 1 vez.';
       } else {
         counterText.textContent = `¡Genial! Has hecho clic ${clicks} veces.`;
       }
+    });
+
+    // --- Constantes y Estado ---
+    const SECRET_KEY = '4512';
+    const STORAGE_KEY = 'mis_notas_app_data';
+
+    // Elementos DOM - Modales
+    const openNotesBtn = document.getElementById('openNotesBtn');
+    const passwordModal = document.getElementById('passwordModal');
+    const pwdModalCard = document.getElementById('pwdModalCard');
+    const closePwdBtn = document.getElementById('closePwdBtn');
+    const cancelPwdBtn = document.getElementById('cancelPwdBtn');
+    const passwordForm = document.getElementById('passwordForm');
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordError = document.getElementById('passwordError');
+
+    const notesModal = document.getElementById('notesModal');
+    const lockNotesBtn = document.getElementById('lockNotesBtn');
+
+    // Elementos DOM - Notas
+    const noteForm = document.getElementById('noteForm');
+    const formTitle = document.getElementById('formTitle');
+    const editingNoteId = document.getElementById('editingNoteId');
+    const noteTitleInput = document.getElementById('noteTitleInput');
+    const noteContentInput = document.getElementById('noteContentInput');
+    const saveNoteBtn = document.getElementById('saveNoteBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const notesListContainer = document.getElementById('notesListContainer');
+    const notesCountBadge = document.getElementById('notesCountBadge');
+
+    // --- Persistencia con LocalStorage ---
+    function getStoredNotes() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        console.error('Error al leer de localStorage', e);
+        return [];
+      }
+    }
+
+    function saveStoredNotes(notes) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+      } catch (e) {
+        console.error('Error al guardar en localStorage', e);
+      }
+    }
+
+    // --- Control de Modales ---
+    function openPasswordModal() {
+      passwordInput.value = '';
+      passwordError.style.display = 'none';
+      passwordModal.classList.add('active');
+      setTimeout(() => passwordInput.focus(), 150);
+    }
+
+    function closePasswordModal() {
+      passwordModal.classList.remove('active');
+    }
+
+    function openNotesModal() {
+      resetNoteForm();
+      renderNotes();
+      notesModal.classList.add('active');
+    }
+
+    function closeNotesModal() {
+      notesModal.classList.remove('active');
+      resetNoteForm();
+    }
+
+    openNotesBtn.addEventListener('click', openPasswordModal);
+    closePwdBtn.addEventListener('click', closePasswordModal);
+    cancelPwdBtn.addEventListener('click', closePasswordModal);
+    lockNotesBtn.addEventListener('click', closeNotesModal);
+
+    // Cerrar modales con clic afuera
+    passwordModal.addEventListener('click', (e) => {
+      if (e.target === passwordModal) closePasswordModal();
+    });
+
+    notesModal.addEventListener('click', (e) => {
+      if (e.target === notesModal) closeNotesModal();
+    });
+
+    // Cerrar modales con tecla ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (passwordModal.classList.contains('active')) closePasswordModal();
+        if (notesModal.classList.contains('active')) closeNotesModal();
+      }
+    });
+
+    // --- Validación de Contraseña (4512) ---
+    passwordForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const enteredValue = passwordInput.value.trim();
+
+      if (enteredValue === SECRET_KEY) {
+        closePasswordModal();
+        openNotesModal();
+      } else {
+        passwordError.style.display = 'block';
+        pwdModalCard.classList.remove('shake');
+        void pwdModalCard.offsetWidth; // Forzar reflujo para reiniciar animación
+        pwdModalCard.classList.add('shake');
+        passwordInput.focus();
+        passwordInput.select();
+      }
+    });
+
+    // --- CRUD de Notas ---
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function renderNotes() {
+      const notes = getStoredNotes();
+      notesCountBadge.textContent = notes.length === 1 ? '1 nota' : `${notes.length} notas`;
+
+      if (notes.length === 0) {
+        notesListContainer.innerHTML = `
+          <div class="empty-state">
+            <span>📭</span>
+            No tienes notas guardadas aún.<br>Escribe una arriba y presiona "Guardar Nota".
+          </div>
+        `;
+        return;
+      }
+
+      // Ordenar: las más recientes primero
+      const sorted = [...notes].sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
+
+      notesListContainer.innerHTML = sorted.map(note => `
+        <div class="note-item" data-id="${note.id}">
+          <div class="note-top">
+            <div class="note-title">${escapeHtml(note.title)}</div>
+            <div class="note-date">${formatDate(note.updatedAt || note.createdAt)}</div>
+          </div>
+          <div class="note-content">${escapeHtml(note.content)}</div>
+          <div class="note-actions">
+            <button class="btn btn-secondary btn-small edit-btn" onclick="startEditNote('${note.id}')" type="button">
+              ✏️ Editar
+            </button>
+            <button class="btn btn-danger btn-small delete-btn" onclick="deleteNote('${note.id}')" type="button">
+              🗑️ Eliminar
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    function resetNoteForm() {
+      editingNoteId.value = '';
+      noteTitleInput.value = '';
+      noteContentInput.value = '';
+      formTitle.textContent = '➕ Nueva Nota';
+      saveNoteBtn.innerHTML = '💾 Guardar Nota';
+      cancelEditBtn.style.display = 'none';
+    }
+
+    noteForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = noteTitleInput.value.trim();
+      const content = noteContentInput.value.trim();
+      const id = editingNoteId.value;
+
+      if (!title || !content) return;
+
+      const notes = getStoredNotes();
+
+      if (id) {
+        // Modo Edición
+        const noteIndex = notes.findIndex(n => n.id === id);
+        if (noteIndex !== -1) {
+          notes[noteIndex].title = title;
+          notes[noteIndex].content = content;
+          notes[noteIndex].updatedAt = new Date().toISOString();
+        }
+      } else {
+        // Modo Creación
+        const newNote = {
+          id: Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+          title: title,
+          content: content,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        notes.unshift(newNote);
+      }
+
+      saveStoredNotes(notes);
+      resetNoteForm();
+      renderNotes();
+    });
+
+    window.startEditNote = function(id) {
+      const notes = getStoredNotes();
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+
+      editingNoteId.value = note.id;
+      noteTitleInput.value = note.title;
+      noteContentInput.value = note.content;
+
+      formTitle.textContent = '✏️ Editando Nota';
+      saveNoteBtn.innerHTML = '💾 Actualizar Nota';
+      cancelEditBtn.style.display = 'inline-flex';
+
+      noteTitleInput.focus();
+    };
+
+    window.deleteNote = function(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta nota?')) return;
+
+      let notes = getStoredNotes();
+      notes = notes.filter(n => n.id !== id);
+      saveStoredNotes(notes);
+
+      // Si estábamos editando la misma nota eliminada, limpiamos el formulario
+      if (editingNoteId.value === id) {
+        resetNoteForm();
+      }
+
+      renderNotes();
+    };
+
+    cancelEditBtn.addEventListener('click', () => {
+      resetNoteForm();
     });
   </script>
 </body>
